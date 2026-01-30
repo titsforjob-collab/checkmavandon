@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tra Cứu Vận Đơn - Cây Shop</title>
+    <title>Tra Cứu Vận Đơn - Tits SHOPEE</title>
     <style>
         body { font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #121212; color: #e0e0e0; }
         .container { background: #1e1e1e; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
@@ -29,13 +29,13 @@
 <body>
 
     <div class="container">
-        <h2>📦 Tra Cứu Đơn Hàng</h2>
+        <h2>📦 Check Mã Vận Đơn</h2>
         <input type="text" id="nameInput" placeholder="Nhập tên của bạn..." onkeypress="handleEnter(event)">
         <button onclick="traCuu()">🔍 Tìm Kiếm</button>
         <div id="ketQua" class="result-box"></div>
     </div>
     
-    <div class="footer">Hệ thống tra cứu vận đơn tự động</div>
+    <div class="footer">Tits SHOPEE VOUCHER</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
@@ -44,7 +44,7 @@
 
         // === CẤU HÌNH CHỮ CHẠY Ở ĐÂY ===
         const noiDungChay = "Nhập tên của bạn + 4 số cuối SĐT (Ví dụ: Tits9999...)            "; // Anh nhớ để khoảng trắng dài ở cuối cho đẹp
-        const tocDoChay = 150; // Tốc độ (số càng nhỏ chạy càng nhanh)
+        const tocDoChay = 200; // Tốc độ (số càng nhỏ chạy càng nhanh)
         let viTri = 0;
 
         function chayChu() {
@@ -101,8 +101,8 @@
                     if (ketQuaTimKiem.length === 0) {
                         boxKetQua.innerHTML = `
                             <div style="text-align:center; padding:20px; background:#332b00; border-radius:8px; color:#ffc107; border: 1px solid #665500;">
-                                ⚠️ Không tìm thấy đơn hàng nào tên là "<strong>${document.getElementById("nameInput").value}</strong>".<br>
-                                Vui lòng kiểm tra lại tên hoặc liên hệ Shop nhé!
+                                ⚠️ Uii có vẻ Tits chưa cập nhật đơn hàng của "<strong>${document.getElementById("nameInput").value}</strong>".<br>
+                                Vui lòng kiểm tra lại tên hoặc liên hệ support giúp Tits nha!
                             </div>`;
                     } else {
                         ketQuaTimKiem.forEach(don => {
@@ -128,3 +128,4 @@
     </script>
 </body>
 </html>
+
