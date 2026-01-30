@@ -22,27 +22,9 @@
         .status-ok:hover { background-color: rgba(40, 167, 69, 0.1); text-decoration: none; }
         .copy-hint { font-size: 12px; color: #666; font-style: italic; margin-left: 5px; }
         .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #555; }
-
-        /* CSS Chặn Zalo */
-        #zalo-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 9999; text-align: center; padding-top: 100px; color: white; }
-        .arrow-up { font-size: 50px; position: absolute; top: 10px; right: 20px; animation: bounce 1s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .zalo-msg { font-size: 18px; line-height: 1.6; padding: 0 20px; }
-        .zalo-close { margin-top: 30px; padding: 10px 20px; border: 1px solid white; background: transparent; color: white; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div id="zalo-overlay">
-        <div class="arrow-up">⬆️</div>
-        <div class="zalo-msg">
-            <strong style="color: #ffc107; font-size: 22px;">LƯU Ý QUAN TRỌNG!</strong><br><br>
-            Bạn đang xem bằng Zalo/Facebook nên sẽ <strong>không copy được mã</strong>.<br><br>
-            Vui lòng bấm vào dấu <strong>3 chấm (...)</strong> ở góc trên bên phải ↗️<br>
-            Chọn <strong>"Mở bằng trình duyệt"</strong> (Open in Browser/Safari/Chrome).
-        </div>
-        <button class="zalo-close" onclick="document.getElementById('zalo-overlay').style.display='none'">Tôi đã hiểu</button>
-    </div>
 
     <div class="container">
         <h2>📦 Tra Cứu MVĐ</h2>
@@ -58,16 +40,7 @@
     <script>
         const linkGoogleSheet = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRR3ULr7cu5ti04UItC-sgbl7BWIHzhtfVsaXVTHBL-asoLNjdf3eJin4Cu8IdQQ5eX7PNlrmEvjD-6/pub?output=csv";
 
-        // 1. Chặn Zalo
-        function checkZalo() {
-            var ua = navigator.userAgent.toLowerCase();
-            if (ua.indexOf('zalo') !== -1 || ua.indexOf('fban') !== -1) {
-                document.getElementById('zalo-overlay').style.display = 'block';
-            }
-        }
-        checkZalo();
-
-        // 2. Chữ chạy
+        // 1. Chữ chạy (Giữ nguyên)
         const noiDungChay = "Nhập tên và 4 số cuối SĐT (Ví dụ: Tits1234...)            "; 
         const tocDoChay = 200; 
         let viTri = 0;
@@ -82,7 +55,7 @@
         }
         window.onload = chayChu;
 
-        // 3. Xử lý logic
+        // 2. Xử lý logic
         function handleEnter(e) { if (e.key === 'Enter') traCuu(); }
 
         function copyText(text, element) {
@@ -95,8 +68,6 @@
         }
 
         // === HÀM CHUẨN HÓA ĐỂ TÌM CHÍNH XÁC TỪ ===
-        // Thêm khoảng trắng vào đầu và đuôi để tìm nguyên từ
-        // Ví dụ: "Thanh" -> " thanh " | Tìm "anh" -> " anh ". " thanh " không chứa " anh " -> OK
         function chuanHoa(str) {
             return " " + str.trim().toLowerCase() + " ";
         }
@@ -119,8 +90,6 @@
                     const ketQuaTimKiem = data.filter(item => {
                         if (!item.TenKhach) return false;
                         const tenTrongList = chuanHoa(item.TenKhach);
-                        
-                        // LOGIC QUAN TRỌNG: Tìm xem từ khóa có nằm trọn vẹn trong tên không
                         return tenTrongList.includes(tenNhap);
                     });
 
