@@ -22,27 +22,55 @@
         .status-ok:hover { background-color: rgba(40, 167, 69, 0.1); text-decoration: none; }
         .copy-hint { font-size: 12px; color: #666; font-style: italic; margin-left: 5px; }
         .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #555; }
+
+        /* === CSS Màn hình hướng dẫn Zalo === */
+        #zalo-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 9999; text-align: center; padding-top: 100px; color: white; }
+        .arrow-up { font-size: 50px; position: absolute; top: 10px; right: 20px; animation: bounce 1s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .zalo-msg { font-size: 18px; line-height: 1.6; padding: 0 20px; }
+        .zalo-close { margin-top: 30px; padding: 10px 20px; border: 1px solid white; background: transparent; color: white; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
+    <div id="zalo-overlay">
+        <div class="arrow-up">⬆️</div>
+        <div class="zalo-msg">
+            <strong style="color: #ffc107; font-size: 22px;">LƯU Ý QUAN TRỌNG!</strong><br><br>
+            Bạn đang xem bằng Zalo/Facebook nên sẽ <strong>không copy được mã</strong>.<br><br>
+            Vui lòng bấm vào dấu <strong>3 chấm (...)</strong> ở góc trên bên phải ↗️<br>
+            Chọn <strong>"Mở bằng trình duyệt"</strong> (Open in Browser/Safari/Chrome).
+        </div>
+        <button class="zalo-close" onclick="document.getElementById('zalo-overlay').style.display='none'">Tôi đã hiểu</button>
+    </div>
+
     <div class="container">
-        <h2> Tra Cứu MVĐ</h2>
+        <h2>📦 Tra Cứu MVĐ</h2>
         <input type="text" id="nameInput" placeholder="Nhập tên của bạn..." onkeypress="handleEnter(event)">
         <button onclick="traCuu()">🔍 Tìm Kiếm</button>
         <div id="ketQua" class="result-box"></div>
     </div>
     
-    <div class="footer">Khum bic bên kia màn hình là ai nhưng...   chúc bạn một ngày vui vẻ nha:"))</div>
+    <div class="footer">Khum bic bên kia màn hình là ai nhưng.. chúc bạn một ngày vui vẻ hẹ hẹ</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
     <script>
-        const linkGoogleSheet = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRR3ULr7cu5ti04UItC-sgbl7BWIHzhtfVsaXVTHBL-asoLNjdf3eJin4Cu8IdQQ5eX7PNlrmEvjD-6/pub?output=csv";
+        const linkGoc = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRR3ULr7cu5ti04UItC-sgbl7BWIHzhtfVsaXVTHBL-asoLNjdf3eJin4Cu8IdQQ5eX7PNlrmEvjD-6/pub?output=csv";
 
-        // 1. Chữ chạy (Giữ nguyên)
+        // 1. Chức năng phát hiện Zalo/Facebook
+        function checkZalo() {
+            var ua = navigator.userAgent.toLowerCase();
+            // Kiểm tra nếu là Zalo hoặc Facebook in-app browser
+            if (ua.indexOf('zalo') !== -1 || ua.indexOf('fban') !== -1 || ua.indexOf('fbav') !== -1) {
+                document.getElementById('zalo-overlay').style.display = 'block';
+            }
+        }
+        checkZalo();
+
+        // 2. Chữ chạy
         const noiDungChay = "Nhập tên và 4 số cuối SĐT (Ví dụ: Tits1234...)            "; 
-        const tocDoChay = 300; 
+        const tocDoChay = 200; 
         let viTri = 0;
         function chayChu() {
             const input = document.getElementById("nameInput");
@@ -55,7 +83,7 @@
         }
         window.onload = chayChu;
 
-        // 2. Xử lý logic
+        // 3. Xử lý logic
         function handleEnter(e) { if (e.key === 'Enter') traCuu(); }
 
         function copyText(text, element) {
@@ -67,21 +95,24 @@
             }).catch(err => { alert("Lỗi copy! Hãy mở bằng Chrome/Safari."); });
         }
 
-        // === HÀM CHUẨN HÓA ĐỂ TÌM CHÍNH XÁC TỪ ===
+        // === HÀM CHUẨN HÓA ===
         function chuanHoa(str) {
             return " " + str.trim().toLowerCase() + " ";
         }
 
         function traCuu() {
             const inputRaw = document.getElementById("nameInput").value;
-            const tenNhap = chuanHoa(inputRaw); // Chuẩn hóa từ khóa nhập vào
+            const tenNhap = chuanHoa(inputRaw); 
             const boxKetQua = document.getElementById("ketQua");
             
             if (!inputRaw.trim()) { alert("Vui lòng nhập tên để tìm!"); return; }
 
-            boxKetQua.innerHTML = "<p style='text-align:center; color:#888'>⏳ Đang tải dữ liệu...</p>";
+            boxKetQua.innerHTML = "<p style='text-align:center; color:#888'>⏳ Đang tải dữ liệu mới nhất...</p>";
 
-            Papa.parse(linkGoogleSheet, {
+            // Thêm Date.now() để chống lưu cache cũ
+            const linkMoiNhat = linkGoc + "&t=" + Date.now();
+
+            Papa.parse(linkMoiNhat, {
                 download: true, header: true,
                 complete: function(results) {
                     const data = results.data;
@@ -96,8 +127,8 @@
                     if (ketQuaTimKiem.length === 0) {
                         boxKetQua.innerHTML = `
                             <div style="text-align:center; padding:20px; background:#332b00; border-radius:8px; color:#ffc107; border: 1px solid #665500;">
-                                ⚠️ Úii!!! Sao tìm mãi không thấy nhỉ "<strong>${inputRaw}</strong>".<br>
-                                Có vẻ tên của bạn chưa có trên hệ thống rùi, liên hệ cho support giúp Tits nha, Thankiuuu!!!
+                                ⚠️ Úii!!! Có vẻ Tits chưa cập nhật đơn của "<strong>${inputRaw}</strong>".<br>
+                                Liên hệ cho support giúp Tits nha, Thankiuuu!!!
                             </div>`;
                     } else {
                         ketQuaTimKiem.forEach(don => {
@@ -123,6 +154,3 @@
     </script>
 </body>
 </html>
-
-
-
