@@ -5,83 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tra Cứu Vận Đơn - Cây Shop</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f4f6f8; }
-        h2 { text-align: center; color: #333; }
-        .search-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        input { padding: 12px; width: 100%; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        body { font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f0f2f5; }
+        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1a1a1a; margin-bottom: 25px; }
+        input { padding: 15px; width: 100%; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; outline: none; transition: border 0.3s; }
+        input:focus { border-color: #007bff; }
+        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
         button:hover { background: #0056b3; }
-        .order-card { margin-top: 15px; padding: 15px; border-left: 5px solid #28a745; background: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .copy-btn { background: #6c757d; font-size: 12px; padding: 5px 10px; margin-left: 10px; width: auto; }
+        .result-box { margin-top: 25px; }
+        .order-card { padding: 20px; border-radius: 10px; background: #f8f9fa; border-left: 5px solid #007bff; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .order-card p { margin: 8px 0; font-size: 15px; color: #333; }
+        .label { font-weight: bold; color: #555; }
+        .status-empty { color: #dc3545; font-weight: bold; font-style: italic; } /* Màu đỏ cho chưa có mã */
+        .status-ok { color: #28a745; font-weight: bold; } /* Màu xanh cho có mã */
+        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #888; }
     </style>
 </head>
 <body>
 
-    <h2>📦 Tra Cứu Mã Vận Đơn</h2>
-    
-    <div class="search-box">
-        <p>Nhập tên của bạn:</p>
-        <input type="text" id="nameInput" placeholder="Ví dụ: Cây, Nguyễn Văn A...">
-        <button onclick="traCuu()">Tìm Kiếm</button>
+    <div class="container">
+        <h2>📦 Tra Cứu Đơn Hàng</h2>
+        <input type="text" id="nameInput" placeholder="Nhập tên của bạn (Ví dụ: ad, Cây...)" onkeypress="handleEnter(event)">
+        <button onclick="traCuu()">🔍 Tìm Kiếm</button>
+        <div id="ketQua" class="result-box"></div>
     </div>
-
-    <div id="ketQua"></div>
+    
+    <div class="footer">Hệ thống tra cứu vận đơn tự động</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
     <script>
-        // QUAN TRỌNG: Dán link CSV mới của anh vào giữa 2 dấu ngoặc kép bên dưới
-        const linkGoogleSheet = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRR3ULr7cu5ti04UItC-sgbl7BWIHzhtfVsaXVTHBL-asoLNjdf3eJin4Cu8IdQQ5eX7PNlrmEvjD-6/pubhtml";
+        // Link CSV đã được Non sửa lại đuôi từ /pubhtml thành /pub?output=csv để code đọc được
+        const linkGoogleSheet = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRR3ULr7cu5ti04UItC-sgbl7BWIHzhtfVsaXVTHBL-asoLNjdf3eJin4Cu8IdQQ5eX7PNlrmEvjD-6/pub?output=csv";
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') traCuu();
+        }
 
         function traCuu() {
-            const tenKhachNhap = document.getElementById("nameInput").value.trim().toLowerCase();
-            const khuVucHienThi = document.getElementById("ketQua");
+            const tenNhap = document.getElementById("nameInput").value.trim().toLowerCase();
+            const boxKetQua = document.getElementById("ketQua");
             
-            if (!tenKhachNhap) {
-                alert("Vui lòng nhập tên để tra cứu!");
+            if (!tenNhap) {
+                alert("Vui lòng nhập tên để tìm!");
                 return;
             }
 
-            khuVucHienThi.innerHTML = "<p style='text-align:center'>⏳ Đang tìm kiếm...</p>";
+            boxKetQua.innerHTML = "<p style='text-align:center; color:#666'>⏳ Đang tải dữ liệu...</p>";
 
-            Papa.parse(https://docs.google.com/spreadsheets/d/e/2PACX-1vRR3ULr7cu5ti04UItC-sgbl7BWIHzhtfVsaXVTHBL-asoLNjdf3eJin4Cu8IdQQ5eX7PNlrmEvjD-6/pub?output=csv, {
+            Papa.parse(linkGoogleSheet, {
                 download: true,
                 header: true,
                 complete: function(results) {
-                    const duLieu = results.data;
-                    khuVucHienThi.innerHTML = ""; // Xóa thông báo cũ
+                    const data = results.data;
+                    boxKetQua.innerHTML = ""; // Xóa dòng đang tải
 
-                    // Lọc tìm khách hàng (So sánh tên)
-                    const ketQuaTimKiem = duLieu.filter(item => 
-                        item.TenKhach && item.TenKhach.toLowerCase().includes(tenKhachNhap)
+                    // Lọc tìm tên khách (chứa từ khóa nhập vào)
+                    const ketQuaTimKiem = data.filter(item => 
+                        item.TenKhach && item.TenKhach.toLowerCase().includes(tenNhap)
                     );
 
                     if (ketQuaTimKiem.length === 0) {
-                        khuVucHienThi.innerHTML = "<p style='text-align:center; color:red'>❌ Không tìm thấy đơn hàng nào cho tên này.</p>";
+                        boxKetQua.innerHTML = `
+                            <div style="text-align:center; padding:20px; background:#fff3cd; border-radius:8px; color:#856404;">
+                                ⚠️ Không tìm thấy đơn hàng nào tên là "<strong>${document.getElementById("nameInput").value}</strong>".<br>
+                                Vui lòng kiểm tra lại tên hoặc liên hệ Shop nhé!
+                            </div>`;
                     } else {
-                        // Hiển thị kết quả
                         ketQuaTimKiem.forEach(don => {
-                            // Xử lý hiển thị ngày tháng cho đẹp (nếu có)
-                            const ngayDat = don.NgayDat ? don.NgayDat : "Không có ngày";
-                            const maVanDon = don.MaVanDon ? don.MaVanDon : "Chưa có mã";
+                            // Logic kiểm tra Mã Vận Đơn
+                            let maVanDonHienThi = "";
+                            
+                            // Nếu ô mã vận đơn trống hoặc không có dữ liệu
+                            if (!don.MaVanDon || don.MaVanDon.trim() === "") {
+                                maVanDonHienThi = `<span class="status-empty">⏳ Chưa có mã (Đơn đang xử lý)</span>`;
+                            } else {
+                                // Nếu có mã (kể cả nội dung anh nhập là gì nó cũng hiện ra)
+                                maVanDonHienThi = `<span class="status-ok">${don.MaVanDon}</span>`;
+                            }
 
-                            const theDonHang = `
+                            const htmlDon = `
                                 <div class="order-card">
-                                    <p><strong>👤 Khách hàng:</strong> ${don.TenKhach}</p>
-                                    <p><strong>📅 Ngày đặt:</strong> ${ngayDat}</p>
-                                    <p><strong>🚚 Mã Vận Đơn:</strong> <span style="color:#007bff; font-weight:bold">${maVanDon}</span></p>
+                                    <p><span class="label">👤 Khách hàng:</span> ${don.TenKhach}</p>
+                                    <p><span class="label">📅 Ngày đặt:</span> ${don.NgayDat || 'Đang cập nhật'}</p>
+                                    <p><span class="label">🚚 Mã Vận Đơn:</span> ${maVanDonHienThi}</p>
                                 </div>
                             `;
-                            khuVucHienThi.innerHTML += theDonHang;
+                            boxKetQua.innerHTML += htmlDon;
                         });
                     }
                 },
                 error: function(err) {
-                    khuVucHienThi.innerHTML = "<p style='color:red'>Lỗi kết nối dữ liệu. Vui lòng thử lại sau.</p>";
+                    boxKetQua.innerHTML = "<p style='text-align:center; color:red'>❌ Lỗi kết nối. Vui lòng thử lại sau.</p>";
                 }
             });
         }
     </script>
 </body>
-
 </html>
